@@ -1,5 +1,6 @@
 import os
 import time
+import serial
 import cv2
 import numpy as np
 from rplidar import RPLidar

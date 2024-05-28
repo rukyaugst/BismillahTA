@@ -62,12 +62,6 @@ void loop()
         // Jika ada pesan yang tersedia di koneksi serial
         String message = Serial.readStringUntil('\n'); // Baca pesan dari serial hingga karakter newline (\n)
         
-
-        scanf(message.c_str(), "linear_x:%f,linear_y:%f,angular_z:%f", &linear_vel_x, &linear_vel_y, &angular_vel_z);
-
-        // Lakukan sesuatu dengan nilai yang diterima, misalnya mengatur kecepatan motor
-        // ...
-        
         // Kirim balasan jika diperlukan
         Serial.println("Received command"); // Kirim balasan ke Python
     }

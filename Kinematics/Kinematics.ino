@@ -48,11 +48,13 @@ void loop()
     //simulated required velocities
     //float linear_vel_x = 0;  // 1: 1m/s kedepan, -1: 1m/s kebelakang
     //float linear_vel_y = 0;  // 1: kanan, -1: kiri
-    //float angular_vel_z = 0; // 1: roda kanan berputar maju, -1: roda kanan berputrr mundur
+    //float angular_vel_z = 0; // 1: roda kanan berputar maju, -1: roda kanan berputar mundur
 
     // Parse pesan dan ekstrak nilai linear_vel_x, linear_vel_y, dan angular_vel_z
     float linear_vel_x, linear_vel_y, angular_vel_z;
     // Contoh parsing pesan dengan format "linear_x:0.5,linear_y:0,angular_z:0.8"
+
+    void parseCommand(String command); //parse the received command (decode serial data)
 
     //given the required velocities for the robot, you can calculate the rpm required for each motor
     rpm = kinematics.getRPM(linear_vel_x, linear_vel_y, angular_vel_z);
@@ -114,5 +116,22 @@ void loop()
     Serial.print(" ANGULAR_Z: ");
     Serial.println(vel.angular_z, 4);
     Serial.println("");
-    
+}
+
+// tambahkan void parseCommand (String command)
+{
+    //split the command string based on the delimiter
+    int index 1= command.index0f(',');
+    int index 2= command.index0f(',', index 1 + 1);
+
+
+    //extract and convert the values from the command string
+    String linear_x... =
+    String linear_y... =
+    String angular_z... =
+
+    //convert strings to float
+    linear_x... = ...
+    linear_y... = ...
+    angular_z... = ...  
 }

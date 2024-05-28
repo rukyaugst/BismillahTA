@@ -15,6 +15,8 @@ def receive_response():
     print("Response:", response)
 
 # Contoh penggunaan
-send_command(0.5, 0, 0.8)  # Kirim perintah ke ESP32
-time.sleep(1)  # Tunggu sebentar
-receive_response()  # Baca dan cetak balasan dari ESP32
+# send_command(0.5, 0, 0.8)  # Kirim perintah ke ESP32
+# time.sleep(1)  # Tunggu sebentar
+# receive_response()  # Baca dan cetak balasan dari ESP32
+
+if...

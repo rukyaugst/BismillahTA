@@ -48,7 +48,7 @@ void loop()
     //simulated required velocities
     //float linear_vel_x = 0;  // 1: 1m/s kedepan, -1: 1m/s kebelakang
     //float linear_vel_y = 0;  // 1: kanan, -1: kiri
-    //float angular_vel_z = 0; // 1: roda kanan berputar maju, -1: roda kanan berputer mundur
+    //float angular_vel_z = 0; // 1: roda kanan berputar maju, -1: roda kanan berputrr mundur
 
     // Parse pesan dan ekstrak nilai linear_vel_x, linear_vel_y, dan angular_vel_z
     float linear_vel_x, linear_vel_y, angular_vel_z;

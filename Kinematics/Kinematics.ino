@@ -1,4 +1,11 @@
+#include <Arduino.h>
 #include "Kinematics.h"
+
+// Variables to store the received commands
+float linear_vel_x = 0;
+float linear_vel_y = 0;
+float angular_vel_z = 0;
+void parseCommand(String command);
 
 #define MOTOR_MAX_RPM 90        // motor's maximum rpm
 #define WHEEL_DIAMETER 0.06      // robot's wheel diameter expressed in meters
@@ -24,10 +31,17 @@ void driveMotor(int speed, bool direction, int enPin, int inPin1, int inPin2) {
     analogWrite(enPin, speed);
 }
 
+void stopMotor(int enPin, int inPin1, int inPin2) {
+    digitalWrite(inPin1, LOW);
+    digitalWrite(inPin2, LOW);
+    analogWrite(enPin, 0);
+    Serial.println("Stop motor");
+}
 
-void setup() 
+void setup()
 {
-    Serial.begin(9600);
+    // Initialize serial communication at 9600 baud rate
+    Serial.begin(115200);
 
     // Setup motor a  (left or right side?)
     pinMode(ENA, OUTPUT);
@@ -40,58 +54,29 @@ void setup()
     pinMode(IN4, OUTPUT);
 }
 
-void loop() 
+void loop()
 {
     Kinematics::output rpm;
     Kinematics::output pwm;
 
-    //simulated required velocities
-    //float linear_vel_x = 0;  // 1: 1m/s kedepan, -1: 1m/s kebelakang
-    //float linear_vel_y = 0;  // 1: kanan, -1: kiri
-    //float angular_vel_z = 0; // 1: roda kanan berputar maju, -1: roda kanan berputar mundur
-
-    // Parse pesan dan ekstrak nilai linear_vel_x, linear_vel_y, dan angular_vel_z
-    float linear_vel_x, linear_vel_y, angular_vel_z;
-    // Contoh parsing pesan dengan format "linear_x:0.5,linear_y:0,angular_z:0.8"
-
-    void parseCommand(String command); //parse the received command (decode serial data)
-
-    //given the required velocities for the robot, you can calculate the rpm required for each motor
     rpm = kinematics.getRPM(linear_vel_x, linear_vel_y, angular_vel_z);
-    pwm = kinematics.getPWM(linear_vel_x, linear_vel_y, angular_vel_z);
 
-    if (Serial.available() > 0) {
-        // Jika ada pesan yang tersedia di koneksi serial
-        String message = Serial.readStringUntil('\n'); // Baca pesan dari serial hingga karakter newline (\n)
-        
-        // Kirim balasan jika diperlukan
-        Serial.println("Received command"); // Kirim balasan ke Python
-    }
 
-    Serial.print(" FRONT LEFT MOTOR: ");
-    Serial.print(rpm.motor1);
+    // Check if data is available on the serial port
+    if (Serial.available() > 0)
+    {
+    // Read the incoming serial data
+    String command = Serial.readStringUntil('\n');
+    parseCommand(command);
 
-    Serial.print(" FRONT RIGHT MOTOR: ");
-    Serial.print(rpm.motor2);
-
-    Serial.print(" REAR LEFT MOTOR: ");
-    Serial.print(rpm.motor3);
-
-    Serial.print(" REAR RIGHT MOTOR: ");
-    Serial.println(rpm.motor4);
-
-    /*
-    karena mobil kita bagian Front Left dan Rear Left, Front Right dan Left RIght adalah masing2 paralel
-    maka linear_y harus 0
-    srhingga kecepatan motor depan dan belakang adalah sama untuk masing2 bagian kiri dan kanan
-    */
-    
-    // This is a simulated feedback from each motor. We'll just pass the calculated rpm above for demo's sake.
-    // In a live robot, these should be replaced with real RPM values derived from encoder.
-    int motor1_feedback = rpm.motor1; //in rpm
-    int motor2_feedback = rpm.motor2; //in rpm
-    int motor3_feedback = rpm.motor3; //in rpm
-    int motor4_feedback = rpm.motor4; //in rpm
+    // Respond back with the received command in JSON format
+    Serial.print("{\"linear_x\":");
+    Serial.print(linear_vel_x);
+    Serial.print(",\"linear_y\":");
+    Serial.print(linear_vel_y);
+    Serial.print(",\"angular_z\":");
+    Serial.print(angular_vel_z);
+    Serial.println("}");
 
     pwm = kinematics.getPWM(linear_vel_x, linear_vel_y, angular_vel_z);
     int speed_A = abs(pwm.motor1);
@@ -99,39 +84,37 @@ void loop()
 
     driveMotor(speed_A, rpm.motor1 >= 0, ENA, IN1, IN2);
     driveMotor(speed_B, rpm.motor2 >= 0, ENB, IN3, IN4);
-//    delay(5000);
 
+
+    if (speed_A == 0) {
+        stopMotor(ENA, IN1, IN2);
+    } else {
+        driveMotor(speed_A, rpm.motor1 >= 0, ENA, IN1, IN2);
+    }
+
+    if (speed_B == 0) {
+        stopMotor(ENB, IN3, IN4);
+    } else {
+        driveMotor(speed_B, rpm.motor2 >= 0, ENB, IN3, IN4);
 
     Kinematics::velocities vel;
-
-    // Now given the RPM from each wheel, you can calculate the linear and angular velocity of the robot.
-    // This is useful if you want to create an odometry data (dead reckoning)
-    vel = kinematics.getVelocities(motor1_feedback, motor2_feedback, motor3_feedback, motor4_feedback);
-    Serial.print(" VEL X: ");
-    Serial.print(vel.linear_x, 4);
-
-    Serial.print(" VEL_Y: ");
-    Serial.print(vel.linear_y, 4);
-
-    Serial.print(" ANGULAR_Z: ");
-    Serial.println(vel.angular_z, 4);
-    Serial.println("");
+    }
+  }
 }
 
-// tambahkan void parseCommand (String command)
+void parseCommand(String command)
 {
-    //split the command string based on the delimiter
-    int index 1= command.index0f(',');
-    int index 2= command.index0f(',', index 1 + 1);
+  // Split the command string based on the delimiter ','
+  int index1 = command.indexOf(',');
+  int index2 = command.indexOf(',', index1 + 1);
 
+  // Extract and convert the values from the command string
+  String linear_x_str = command.substring(command.indexOf(':') + 1, index1);
+  String linear_y_str = command.substring(command.indexOf(':', index1) + 1, index2);
+  String angular_z_str = command.substring(command.indexOf(':', index2) + 1);
 
-    //extract and convert the values from the command string
-    String linear_x... =
-    String linear_y... =
-    String angular_z... =
-
-    //convert strings to float
-    linear_x... = ...
-    linear_y... = ...
-    angular_z... = ...  
+  // Convert strings to float
+  linear_vel_x = linear_x_str.toFloat();
+  linear_vel_y = linear_y_str.toFloat();
+  angular_vel_z = angular_z_str.toFloat();
 }

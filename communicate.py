@@ -2,7 +2,7 @@ import serial
 import time
 
 # Inisialisasi koneksi serial
-ser = serial.Serial('/dev/ttyUSB0', 9600)  # Ganti '/dev/ttyUSB0' dengan port serial yang sesuai
+ser = serial.Serial('/dev/ttyUSB0', 115200)  # Ganti '/dev/ttyUSB0' dengan port serial yang sesuai
 
 def send_command(linear_vel_x, linear_vel_y, angular_vel_z):
     # Kirim pesan ke ESP32 dalam format yang diharapkan
